@@ -5,7 +5,7 @@ var Seat = new Schema({
 	theatreId: Schema.ObjectId,
 	bookedSeats: [{
 		row: String,
-		seatNo: [Number]
+		seatNos: [Number]
 	}]
 });
 

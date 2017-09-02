@@ -6,11 +6,12 @@ function book(req, res, next) {
 	var theatreId = req.body.theatreId,
 		seats = req.body.seats;
 
-	var bookedSeats = new Seat();
+	var bookedSeats = {};
 	bookedSeats.theatreId = theatreId;
 	bookedSeats.bookedSeats = seats;
+	var query = { theatreId : theatreId};
 
-	bookedSeats.save(function(err, bookedSeats) {
+	Seat.findOneAndUpdate(query, bookedSeats, {upsert: true}, function(err, bookedSeats) {
 		if(err) {
 			console.log(err);
 			res.json(Common.dbError);
@@ -33,12 +34,19 @@ function status(req, res, next) {
 				if(err) {
 					res.json(Common.dbError);
 				} else {
-					res.json({
+					let response = {
 						theatreId: theatre._id,
 						theatre: theatre.name,
-						location: theatre.location,
-						bookedSeats: bookedSeats.bookedSeats.map(function(item) { return { row: item.row, seatNo: item.seatNo}})
-					});	
+						location: theatre.location
+					};
+
+					if(bookedSeats) {
+						response.bookedSeats = bookedSeats.bookedSeats.map(function(item) { return { row: item.row, seatNos: item.seatNos}})
+					} else {
+						response.bookedSeats = [];
+					}
+
+					res.json(response);	
 				}
 				
 			})

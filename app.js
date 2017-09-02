@@ -14,6 +14,12 @@ var db = mongoose.connect(Config.MONGO, {
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
+app.use(function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
+	next();
+})
+
 app.use(require('./router'));
 
 app.listen(Config.SERVER_PORT, ()=> {
